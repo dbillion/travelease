@@ -101,7 +101,9 @@ export default function MultiStepFormFixed({ onSubmit, loading }: MultiStepFormP
         setValue("city", parsedData.city || null)
         setValue("budget", parsedData.budget || 1000)
         setValue("days", parsedData.days || 7)
-        setValue("interests", parsedData.interests || [])
+        // Remove duplicates from interests array
+        const uniqueInterests = [...new Set(parsedData.interests || [])]
+        setValue("interests", uniqueInterests)
         setValue("touring", parsedData.touring || null)
       } catch (e) {
         console.error("Failed to parse saved form data", e)
@@ -151,7 +153,10 @@ export default function MultiStepFormFixed({ onSubmit, loading }: MultiStepFormP
     let newInterests: string[]
     
     if (checked) {
-      newInterests = [...currentInterests, interestId]
+      // Only add if not already present to prevent duplicates
+      newInterests = currentInterests.includes(interestId) 
+        ? currentInterests 
+        : [...currentInterests, interestId]
     } else {
       newInterests = currentInterests.filter(id => id !== interestId)
     }
@@ -440,10 +445,10 @@ export default function MultiStepFormFixed({ onSubmit, loading }: MultiStepFormP
                 <div className="space-y-4">
                   <p className="text-gray-600 font-medium">Based on your interests, we'll recommend:</p>
                   <div className="space-y-3">
-                    {currentInterests.map((interestId) => {
+                    {currentInterests.map((interestId, index) => {
                       const interest = INTEREST_OPTIONS.find(opt => opt.id === interestId)
                       return interest ? (
-                        <div key={interestId} className="flex items-center space-x-4 bg-white p-4 rounded-lg shadow-sm border border-purple-100">
+                        <div key={`${interestId}-${index}`} className="flex items-center space-x-4 bg-white p-4 rounded-lg shadow-sm border border-purple-100">
                           <span className="text-2xl">{interest.icon}</span>
                           <div>
                             <div className="font-semibold text-gray-800">{interest.label}</div>
@@ -574,10 +579,10 @@ export default function MultiStepFormFixed({ onSubmit, loading }: MultiStepFormP
                 <div className="bg-white rounded-lg p-4 border border-blue-200">
                   <div className="font-semibold text-gray-700 mb-2">❤️ Interests</div>
                   <div className="flex flex-wrap gap-2">
-                    {currentInterests?.map((interestId) => {
+                    {currentInterests?.map((interestId, index) => {
                       const interest = INTEREST_OPTIONS.find(opt => opt.id === interestId)
                       return interest ? (
-                        <span key={interestId} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                        <span key={`interest-${interestId}-${index}`} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
                           {interest.icon} {interest.label}
                         </span>
                       ) : null

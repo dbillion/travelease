@@ -12,6 +12,7 @@ import { Loader2, Save, Share2, PiggyBank, Calendar, DollarSign, Printer } from 
 import { toast } from "sonner"
 import CountryInfo from "@/components/country-info"
 import MultiStepFormFixed from "@/components/multi-step-form-fixed"
+import { PrintButton, enhancedPrint } from "@/components/print-utils"
 
 interface ItineraryResponse {
   dailyItinerary: Array<{
@@ -148,7 +149,45 @@ export default function AIPlannerPage() {
   }
 
   const handlePrint = () => {
-    window.print()
+    enhancedPrint({
+      title: "Travel Itinerary",
+      hideElements: [
+        ".tabs-list",
+        "button:not(.print-keep)",
+        "nav",
+        ".form-container",
+        ".multi-step-form"
+      ],
+      customStyles: `
+        .daily-itinerary {
+          page-break-inside: avoid;
+          margin-bottom: 20px;
+        }
+        
+        .itinerary-day {
+          border-left: 3px solid #3b82f6;
+          padding-left: 15px;
+          margin-bottom: 15px;
+        }
+        
+        .activity-item {
+          margin-bottom: 8px;
+          padding: 8px 0;
+          border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .cost-item {
+          font-weight: 600;
+          color: #059669 !important;
+        }
+        
+        .budget-summary {
+          background: #f9fafb !important;
+          border: 2px solid #e5e7eb !important;
+          page-break-inside: avoid;
+        }
+      `
+    })
   }
 
   if (!isLoggedIn) {
@@ -187,50 +226,66 @@ export default function AIPlannerPage() {
                     <PiggyBank className="mr-2" />
                     Budget Summary
                   </span>
-                  <Button 
-                    onClick={handlePrint} 
-                    variant="secondary" 
+                  <PrintButton 
+                    title="Travel Itinerary"
+                    variant="outline"
                     size="sm"
-                    className="print:hidden"
+                    hideElements={[
+                      ".tabs-list",
+                      "button:not(.print-keep)",
+                      "nav",
+                      ".form-container",
+                      ".multi-step-form"
+                    ]}
+                    customStyles={`
+                      .daily-itinerary {
+                        page-break-inside: avoid;
+                        margin-bottom: 20px;
+                      }
+                      .budget-summary {
+                        background: #f9fafb !important;
+                        border: 2px solid #e5e7eb !important;
+                        page-break-inside: avoid;
+                      }
+                    `}
                   >
-                    <Printer className="mr-2 h-4 w-4" />
-                    Print
-                  </Button>
+                    Print Itinerary
+                  </PrintButton>
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="space-y-2">
-                    <p className="text-sm opacity-90">Total Budget</p>
-                    <p className="text-2xl font-bold">${formData.budget}</p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 print:grid-cols-2 print:gap-6">
+                  <div className="space-y-2 print:space-y-1">
+                    <p className="text-sm opacity-90 print:text-gray-700 print:opacity-100">Total Budget</p>
+                    <p className="text-2xl font-bold print:text-xl print:text-green-600">${formData.budget}</p>
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-sm opacity-90">Savings Buffer (10%)</p>
-                    <p className="text-2xl font-bold">${itineraryData.budgetSummary.savingsBuffer.toFixed(2)}</p>
+                  <div className="space-y-2 print:space-y-1">
+                    <p className="text-sm opacity-90 print:text-gray-700 print:opacity-100">Savings Buffer (10%)</p>
+                    <p className="text-2xl font-bold print:text-xl print:text-green-600">${itineraryData.budgetSummary.savingsBuffer.toFixed(2)}</p>
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-sm opacity-90">Daily Spending</p>
-                    <p className="text-2xl font-bold">${itineraryData.budgetSummary.dailySpending.toFixed(2)}</p>
+                  <div className="space-y-2 print:space-y-1">
+                    <p className="text-sm opacity-90 print:text-gray-700 print:opacity-100">Daily Spending</p>
+                    <p className="text-2xl font-bold print:text-xl print:text-green-600">${itineraryData.budgetSummary.dailySpending.toFixed(2)}</p>
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-sm opacity-90">Weekly Overview</p>
-                    <p className="text-2xl font-bold">${itineraryData.budgetSummary.weeklyOverview.toFixed(2)}</p>
+                  <div className="space-y-2 print:space-y-1">
+                    <p className="text-sm opacity-90 print:text-gray-700 print:opacity-100">Weekly Overview</p>
+                    <p className="text-2xl font-bold print:text-xl print:text-green-600">${itineraryData.budgetSummary.weeklyOverview.toFixed(2)}</p>
                   </div>
                 </div>
-                <div className="mt-6 grid grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <p className="text-sm opacity-90">Planned Spend</p>
-                    <p className="text-xl font-bold">${itineraryData.budgetSummary.plannedSpend.toFixed(2)}</p>
+                <div className="mt-6 grid grid-cols-3 gap-4 print:grid-cols-3 print:gap-6 print:mt-4">
+                  <div className="space-y-2 print:space-y-1">
+                    <p className="text-sm opacity-90 print:text-gray-700 print:opacity-100">Planned Spend</p>
+                    <p className="text-xl font-bold print:text-lg print:text-blue-600">${itineraryData.budgetSummary.plannedSpend.toFixed(2)}</p>
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-sm opacity-90">Savings</p>
-                    <p className="text-xl font-bold text-green-300">
+                  <div className="space-y-2 print:space-y-1">
+                    <p className="text-sm opacity-90 print:text-gray-700 print:opacity-100">Savings</p>
+                    <p className="text-xl font-bold text-green-300 print:text-lg print:text-green-600">
                       ${itineraryData.budgetSummary.savingsBuffer.toFixed(2)}
                     </p>
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-sm opacity-90">Remaining</p>
-                    <p className="text-xl font-bold text-green-300">
+                  <div className="space-y-2 print:space-y-1">
+                    <p className="text-sm opacity-90 print:text-gray-700 print:opacity-100">Remaining</p>
+                    <p className="text-xl font-bold text-green-300 print:text-lg print:text-green-600">
                       ${itineraryData.budgetSummary.remaining.toFixed(2)}
                     </p>
                   </div>
@@ -251,11 +306,11 @@ export default function AIPlannerPage() {
                 <Card
                   className={`hover:shadow-lg transition-all duration-300 hover:scale-[1.02] bg-gradient-to-r ${getGradientColor(
                     index,
-                  )} border border-gray-200 shadow-md print:shadow-none print:scale-100`}
+                  )} border border-gray-200 shadow-md print:shadow-none print:scale-100 print:bg-white print:border-2 print:border-gray-300 daily-itinerary no-page-break`}
                 >
-                  <CardHeader className="text-white">
-                    <CardTitle className="flex items-center text-white drop-shadow-md">
-                      <Calendar className="mr-2" />
+                  <CardHeader className="text-white print:text-black print:bg-gray-100">
+                    <CardTitle className="flex items-center text-white drop-shadow-md print:text-black print:drop-shadow-none">
+                      <Calendar className="mr-2 print:text-blue-600" />
                       Day {day.day}
                     </CardTitle>
                   </CardHeader>
@@ -265,12 +320,12 @@ export default function AIPlannerPage() {
                       {day.activities.map((activity, idx) => (
                         <motion.div
                           key={idx}
-                          className="bg-white/95 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100 print:shadow-none print:border-none"
+                          className="bg-white/95 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100 print:shadow-none print:border print:border-gray-300 activity-item"
                           whileHover={{ scale: 1.01 }}
                         >
-                          <p className="font-semibold text-gray-900">{activity.time}</p>
-                          <p className="mt-1 text-gray-700">{activity.description}</p>
-                          <p className="mt-2 text-sm text-gray-600 font-medium">
+                          <p className="font-semibold text-gray-900 print:text-black">{activity.time}</p>
+                          <p className="mt-1 text-gray-700 print:text-gray-800">{activity.description}</p>
+                          <p className="mt-2 text-sm text-gray-600 font-medium print:text-green-600 cost-item">
                             Estimated Cost: ${activity.cost.toFixed(2)}
                           </p>
                         </motion.div>
@@ -363,10 +418,31 @@ export default function AIPlannerPage() {
               <Share2 className="mr-2 h-4 w-4" />
               Share
             </Button>
-            <Button onClick={handlePrint} variant="outline" className="flex-1">
-              <Printer className="mr-2 h-4 w-4" />
-              Print
-            </Button>
+            <PrintButton 
+              title="Travel Itinerary"
+              variant="outline"
+              className="flex-1"
+              hideElements={[
+                ".tabs-list",
+                "button:not(.print-keep)",
+                "nav",
+                ".form-container",
+                ".multi-step-form"
+              ]}
+              customStyles={`
+                .daily-itinerary {
+                  page-break-inside: avoid;
+                  margin-bottom: 20px;
+                }
+                .budget-summary {
+                  background: #f9fafb !important;
+                  border: 2px solid #e5e7eb !important;
+                  page-break-inside: avoid;
+                }
+              `}
+            >
+              Print Itinerary
+            </PrintButton>
           </div>
         </div>
       )}
