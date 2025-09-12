@@ -95,32 +95,32 @@ export default function BlogPage() {
   )
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <h1 className="text-4xl font-bold mb-8 text-center">Travel Blog</h1>
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 text-center">Travel Blog</h1>
 
-      <div className="mb-16">
-        <h2 className="text-2xl font-semibold mb-4">Featured Destinations</h2>
+      <div className="mb-12 sm:mb-16">
+        <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-center sm:text-left">Featured Destinations</h2>
         <ThreeDPhotoCarousel />
       </div>
 
-      <div className="mb-8">
+      <div className="mb-6 sm:mb-8">
         <Input
           type="text"
           placeholder="Search blog posts..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="max-w-md mx-auto"
+          className="w-full max-w-md mx-auto"
         />
       </div>
 
-      <Tabs defaultValue="All" className="mb-8">
-        <TabsList className="flex flex-wrap justify-center">
+      <Tabs defaultValue="All" className="mb-6 sm:mb-8">
+        <TabsList className="flex flex-wrap justify-center gap-1 sm:gap-2">
           {categories.map((category) => (
             <TabsTrigger
               key={category}
               value={category}
               onClick={() => setActiveCategory(category)}
-              className="px-4 py-2 m-1"
+              className="px-2 sm:px-4 py-2 m-1 text-xs sm:text-sm"
             >
               {category}
             </TabsTrigger>
@@ -128,7 +128,7 @@ export default function BlogPage() {
         </TabsList>
       </Tabs>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
         {filteredPosts.map((post) => (
           <Card key={post.id} className="flex flex-col h-full">
             <CardHeader className="p-0">
@@ -137,30 +137,30 @@ export default function BlogPage() {
                 alt={post.title}
                 width={800}
                 height={400}
-                className="w-full h-48 object-cover rounded-t-lg"
+                className="w-full h-36 sm:h-48 object-cover rounded-t-lg"
               />
             </CardHeader>
-            <CardContent className="flex-grow p-6">
-              <CardTitle className="mb-2">
+            <CardContent className="flex-grow p-4 sm:p-6">
+              <CardTitle className="mb-2 text-lg sm:text-xl">
                 <Link href={`/blog/${post.id}`} className="hover:underline">
                   {post.title}
                 </Link>
               </CardTitle>
-              <CardDescription>{post.excerpt}</CardDescription>
+              <CardDescription className="text-sm sm:text-base">{post.excerpt}</CardDescription>
             </CardContent>
-            <CardFooter className="flex items-center justify-between p-6 bg-muted/50">
+            <CardFooter className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-6 bg-muted/50 gap-2 sm:gap-0">
               <div className="flex items-center space-x-2">
                 <Image
                   src={post.authorImage || "/placeholder.svg"}
                   alt={post.author}
                   width={40}
                   height={40}
-                  className="rounded-full"
+                  className="rounded-full w-8 h-8 sm:w-10 sm:h-10"
                 />
-                <span className="text-sm text-muted-foreground">{post.author}</span>
+                <span className="text-xs sm:text-sm text-muted-foreground">{post.author}</span>
               </div>
-              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                <Calendar className="w-4 h-4" />
+              <div className="flex items-center space-x-2 text-xs sm:text-sm text-muted-foreground">
+                <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span>{post.date}</span>
               </div>
             </CardFooter>
@@ -168,8 +168,8 @@ export default function BlogPage() {
         ))}
       </div>
 
-      <div className="mt-12 text-center">
-        <Button variant="outline">Load More Posts</Button>
+      <div className="mt-8 sm:mt-12 text-center">
+        <Button variant="outline" className="w-full sm:w-auto">Load More Posts</Button>
       </div>
     </div>
   )

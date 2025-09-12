@@ -37,55 +37,57 @@ export default function Home() {
         <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
           <div className="flex flex-col">
             {/* Hero Section */}
-            <section className="relative">
-              <div className="container flex flex-col-reverse gap-8 py-12 md:flex-row md:items-center md:py-24 lg:py-32">
-                <div className="flex-1 space-y-4">
-                  <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
+            <section className="relative px-4 sm:px-6 lg:px-8">
+              <div className="container mx-auto flex flex-col-reverse gap-8 py-8 sm:py-12 md:flex-row md:items-center md:py-16 lg:py-24 xl:py-32">
+                <div className="flex-1 space-y-4 sm:space-y-6">
+                  <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl">
                     Experience Hassle-Free Travel With Our Services
                   </h1>
-                  <p className="text-xl text-muted-foreground">
+                  <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-[600px]">
                     Our travel agency simplifies the booking process, ensuring you spend less time planning and more
                     time enjoying your journey. With expert visa assistance and personalized customer service, we cater
                     to your unique travel needs.
                   </p>
-                  <div className="flex flex-col gap-4 sm:flex-row">
-                    <Button size="lg" asChild>
+                  <div className="flex flex-col gap-4 sm:flex-row sm:gap-6">
+                    <Button size="lg" className="w-full sm:w-auto" asChild>
                       <Link href="/services">Learn More</Link>
                     </Button>
-                    <Button size="lg" variant="outline" asChild>
+                    <Button size="lg" variant="outline" className="w-full sm:w-auto" asChild>
                       <Link href="/signup">Sign Up</Link>
                     </Button>
                   </div>
                 </div>
-                <div className="flex-1">
-                  <Image
-                    src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/landingpage2.jpg-m2dYtL9cUYIFI4gijbLcG4ogCsM8e2.jpeg"
-                    alt="People discussing travel plans"
-                    width={600}
-                    height={400}
-                    className="rounded-lg object-cover"
-                    priority
-                  />
+                <div className="flex-1 flex justify-center">
+                  <div className="relative w-full max-w-[600px]">
+                    <Image
+                      src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/landingpage2.jpg-m2dYtL9cUYIFI4gijbLcG4ogCsM8e2.jpeg"
+                      alt="People discussing travel plans"
+                      width={600}
+                      height={400}
+                      className="w-full h-auto rounded-lg object-cover"
+                      priority
+                    />
+                  </div>
                 </div>
               </div>
             </section>
 
             {/* Services Section */}
-            <section className="bg-muted py-12 md:py-24">
-              <div className="container">
+            <section className="bg-muted py-8 sm:py-12 md:py-16 lg:py-24">
+              <div className="container px-4 sm:px-6 lg:px-8">
                 <div className="mx-auto max-w-[58rem] text-center">
-                  <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+                  <h2 className="text-2xl font-bold tracking-tighter sm:text-3xl md:text-4xl lg:text-5xl">
                     Simplifying Your Travel: Booking Tickets and Visa Information Made Easy
                   </h2>
-                  <p className="mt-4 text-muted-foreground">
+                  <p className="mt-4 text-sm sm:text-base md:text-lg text-muted-foreground">
                     Choose your destination and travel dates to begin your journey
                   </p>
                 </div>
-                <div className="mx-auto mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Seamless Ticket Booking</CardTitle>
-                      <CardDescription>Book flights easily with our user-friendly platform</CardDescription>
+                <div className="mx-auto mt-8 sm:mt-12 grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl">
+                  <Card className="w-full">
+                    <CardHeader className="text-center sm:text-left">
+                      <CardTitle className="text-lg sm:text-xl">Seamless Ticket Booking</CardTitle>
+                      <CardDescription className="text-sm sm:text-base">Book flights easily with our user-friendly platform</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <Link href="/services/ticket-booking">
@@ -93,10 +95,10 @@ export default function Home() {
                       </Link>
                     </CardContent>
                   </Card>
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Student Visa Guidance</CardTitle>
-                      <CardDescription>Get the latest information on student visas</CardDescription>
+                  <Card className="w-full">
+                    <CardHeader className="text-center sm:text-left">
+                      <CardTitle className="text-lg sm:text-xl">Student Visa Guidance</CardTitle>
+                      <CardDescription className="text-sm sm:text-base">Get the latest information on student visas</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <Link href="/services/student-visa">
@@ -104,10 +106,10 @@ export default function Home() {
                       </Link>
                     </CardContent>
                   </Card>
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Business Visa Solutions</CardTitle>
-                      <CardDescription>Navigate business visa requirements with ease</CardDescription>
+                  <Card className="w-full sm:col-span-2 lg:col-span-1">
+                    <CardHeader className="text-center sm:text-left">
+                      <CardTitle className="text-lg sm:text-xl">Business Visa Solutions</CardTitle>
+                      <CardDescription className="text-sm sm:text-base">Navigate business visa requirements with ease</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <Link href="/services/business-visa">
@@ -120,25 +122,25 @@ export default function Home() {
             </section>
 
             {/* Testimonials Section */}
-            <section className="py-12 md:py-24">
-              <div className="container">
-                <h2 className="text-center text-3xl font-bold tracking-tighter sm:text-4xl">Customer Testimonials</h2>
-                <p className="mt-4 text-center text-muted-foreground">
+            <section className="py-8 sm:py-12 md:py-16 lg:py-24">
+              <div className="container px-4 sm:px-6 lg:px-8">
+                <h2 className="text-center text-2xl font-bold tracking-tighter sm:text-3xl md:text-4xl">Customer Testimonials</h2>
+                <p className="mt-4 text-center text-sm sm:text-base md:text-lg text-muted-foreground">
                   Our clients love the seamless booking experience!
                 </p>
-                <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="mt-8 sm:mt-12 grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
                   {testimonials.map((testimonial, index) => (
-                    <Card key={index}>
+                    <Card key={index} className="w-full">
                       <CardHeader>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 justify-center sm:justify-start">
                           {[...Array(5)].map((_, i) => (
                             <Star key={i} className="h-4 w-4 fill-primary text-primary" />
                           ))}
                         </div>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-muted-foreground">{testimonial.text}</p>
-                        <div className="mt-4 flex items-center gap-4">
+                        <p className="text-muted-foreground text-sm sm:text-base text-center sm:text-left">{testimonial.text}</p>
+                        <div className="mt-4 flex items-center gap-4 justify-center sm:justify-start">
                           <Image
                             src={testimonial.avatar || "/placeholder.svg"}
                             alt={testimonial.name}
@@ -146,9 +148,9 @@ export default function Home() {
                             height={40}
                             className="rounded-full"
                           />
-                          <div>
-                            <p className="font-semibold">{testimonial.name}</p>
-                            <p className="text-sm text-muted-foreground">{testimonial.title}</p>
+                          <div className="text-center sm:text-left">
+                            <p className="font-semibold text-sm sm:text-base">{testimonial.name}</p>
+                            <p className="text-xs sm:text-sm text-muted-foreground">{testimonial.title}</p>
                           </div>
                         </div>
                       </CardContent>

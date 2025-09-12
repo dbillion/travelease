@@ -7,17 +7,17 @@ import { MapPin, Phone, Mail, Clock } from "lucide-react"
 
 export default function ContactPage() {
   return (
-    <div className="container mx-auto px-4 py-12">
-      <h1 className="text-4xl font-bold mb-8 text-center">Contact Us</h1>
-      <div className="grid md:grid-cols-2 gap-8">
-        <Card>
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 sm:mb-8 text-center">Contact Us</h1>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 max-w-6xl mx-auto">
+        <Card className="w-full">
           <CardHeader>
-            <CardTitle>Send us a message</CardTitle>
-            <CardDescription>We'll get back to you as soon as possible.</CardDescription>
+            <CardTitle className="text-xl sm:text-2xl">Send us a message</CardTitle>
+            <CardDescription className="text-sm sm:text-base">We'll get back to you as soon as possible.</CardDescription>
           </CardHeader>
           <CardContent>
-            <form className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
+            <form className="space-y-4 sm:space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="first-name">First name</Label>
                   <Input id="first-name" placeholder="John" />
@@ -37,7 +37,7 @@ export default function ContactPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="message">Message</Label>
-                <Textarea id="message" placeholder="Please provide details about your inquiry..." />
+                <Textarea id="message" placeholder="Please provide details about your inquiry..." className="min-h-[120px]" />
               </div>
               <Button type="submit" className="w-full">
                 Send Message
@@ -45,9 +45,9 @@ export default function ContactPage() {
             </form>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="w-full">
           <CardHeader>
-            <CardTitle>Contact Information</CardTitle>
+            <CardTitle className="text-xl sm:text-2xl">Contact Information</CardTitle>
             <CardDescription>Get in touch with us through various channels.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">

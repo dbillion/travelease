@@ -5,37 +5,37 @@ import { Check, FileText, GraduationCap, Users } from "lucide-react"
 
 export default function StudentVisaPage() {
   return (
-    <div className="container py-12 md:py-24">
+    <div className="container px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-24">
       {/* Header Section */}
       <div className="mx-auto max-w-[800px] text-center">
-        <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl">Student Visa Services</h1>
-        <p className="mt-4 text-xl text-muted-foreground">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tighter">Student Visa Services</h1>
+        <p className="mt-4 text-lg sm:text-xl text-muted-foreground">
           Get expert guidance for your student visa application process
         </p>
       </div>
 
       {/* Visa Types Section */}
-      <div className="mt-16">
+      <div className="mt-12 sm:mt-16">
         <Tabs defaultValue="requirements" className="mx-auto max-w-[1000px]">
-          <TabsList className="grid w-full max-w-[600px] grid-cols-3">
-            <TabsTrigger value="requirements">Requirements</TabsTrigger>
-            <TabsTrigger value="process">Process</TabsTrigger>
-            <TabsTrigger value="documents">Documents</TabsTrigger>
+          <TabsList className="grid w-full max-w-[600px] grid-cols-3 mx-auto">
+            <TabsTrigger value="requirements" className="text-xs sm:text-sm">Requirements</TabsTrigger>
+            <TabsTrigger value="process" className="text-xs sm:text-sm">Process</TabsTrigger>
+            <TabsTrigger value="documents" className="text-xs sm:text-sm">Documents</TabsTrigger>
           </TabsList>
           <TabsContent value="requirements" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>Visa Requirements</CardTitle>
-                <CardDescription>Essential requirements for student visa application</CardDescription>
+                <CardTitle className="text-xl sm:text-2xl">Visa Requirements</CardTitle>
+                <CardDescription className="text-sm sm:text-base">Essential requirements for student visa application</CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-4">
                   {requirements.map((req, index) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <Check className="mt-1 h-5 w-5 shrink-0 text-primary" />
+                    <li key={index} className="flex items-start gap-2 sm:gap-3">
+                      <Check className="mt-1 h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-primary" />
                       <div>
-                        <h3 className="font-semibold">{req.title}</h3>
-                        <p className="text-muted-foreground">{req.description}</p>
+                        <h3 className="font-semibold text-sm sm:text-base">{req.title}</h3>
+                        <p className="text-muted-foreground text-sm sm:text-base">{req.description}</p>
                       </div>
                     </li>
                   ))}
@@ -46,19 +46,19 @@ export default function StudentVisaPage() {
           <TabsContent value="process" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>Application Process</CardTitle>
-                <CardDescription>Step-by-step guide to applying for your student visa</CardDescription>
+                <CardTitle className="text-xl sm:text-2xl">Application Process</CardTitle>
+                <CardDescription className="text-sm sm:text-base">Step-by-step guide to applying for your student visa</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-8">
+                <div className="space-y-6 sm:space-y-8">
                   {process.map((step, index) => (
-                    <div key={index} className="flex gap-4">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                    <div key={index} className="flex gap-3 sm:gap-4">
+                      <div className="flex h-6 w-6 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm sm:text-base">
                         {index + 1}
                       </div>
                       <div>
-                        <h3 className="font-semibold">{step.title}</h3>
-                        <p className="text-muted-foreground">{step.description}</p>
+                        <h3 className="font-semibold text-sm sm:text-base">{step.title}</h3>
+                        <p className="text-muted-foreground text-sm sm:text-base">{step.description}</p>
                       </div>
                     </div>
                   ))}
@@ -69,17 +69,17 @@ export default function StudentVisaPage() {
           <TabsContent value="documents" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>Required Documents</CardTitle>
-                <CardDescription>Complete list of documents needed for your application</CardDescription>
+                <CardTitle className="text-xl sm:text-2xl">Required Documents</CardTitle>
+                <CardDescription className="text-sm sm:text-base">Complete list of documents needed for your application</CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-4">
                   {documents.map((doc, index) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <FileText className="mt-1 h-5 w-5 shrink-0 text-primary" />
+                    <li key={index} className="flex items-start gap-2 sm:gap-3">
+                      <FileText className="mt-1 h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-primary" />
                       <div>
-                        <h3 className="font-semibold">{doc.title}</h3>
-                        <p className="text-muted-foreground">{doc.description}</p>
+                        <h3 className="font-semibold text-sm sm:text-base">{doc.title}</h3>
+                        <p className="text-muted-foreground text-sm sm:text-base">{doc.description}</p>
                       </div>
                     </li>
                   ))}
@@ -91,17 +91,17 @@ export default function StudentVisaPage() {
       </div>
 
       {/* Services Section */}
-      <div className="mt-24">
-        <h2 className="text-center text-3xl font-bold">Our Services</h2>
-        <div className="mt-12 grid gap-8 md:grid-cols-3">
+      <div className="mt-16 sm:mt-24">
+        <h2 className="text-center text-2xl sm:text-3xl font-bold">Our Services</h2>
+        <div className="mt-8 sm:mt-12 grid gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((service, index) => (
             <Card key={index}>
-              <CardHeader>
-                <service.icon className="h-8 w-8 text-primary" />
-                <CardTitle className="mt-4">{service.title}</CardTitle>
+              <CardHeader className="text-center sm:text-left">
+                <service.icon className="h-6 w-6 sm:h-8 sm:w-8 text-primary mx-auto sm:mx-0" />
+                <CardTitle className="mt-4 text-lg sm:text-xl">{service.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">{service.description}</p>
+                <p className="text-sm sm:text-base text-muted-foreground text-center sm:text-left">{service.description}</p>
               </CardContent>
             </Card>
           ))}
@@ -109,12 +109,12 @@ export default function StudentVisaPage() {
       </div>
 
       {/* CTA Section */}
-      <div className="mt-24 text-center">
-        <h2 className="text-3xl font-bold">Ready to Start Your Journey?</h2>
-        <p className="mt-4 text-muted-foreground">
+      <div className="mt-16 sm:mt-24 text-center">
+        <h2 className="text-2xl sm:text-3xl font-bold">Ready to Start Your Journey?</h2>
+        <p className="mt-4 text-sm sm:text-base text-muted-foreground px-4">
           Contact us today for a free consultation about your student visa application
         </p>
-        <Button size="lg" className="mt-8">
+        <Button size="lg" className="mt-6 sm:mt-8 w-full sm:w-auto">
           Get Started
         </Button>
       </div>

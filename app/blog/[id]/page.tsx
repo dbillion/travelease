@@ -132,28 +132,28 @@ export default function BlogPost({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
       <article className="max-w-3xl mx-auto">
-        <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-        <div className="flex items-center mb-6">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6">{post.title}</h1>
+        <div className="flex items-center mb-4 sm:mb-6">
           <Image
             src={post.authorImage || "/placeholder.svg"}
             alt={post.author}
             width={40}
             height={40}
-            className="rounded-full mr-4"
+            className="rounded-full mr-3 sm:mr-4 w-8 h-8 sm:w-10 sm:h-10"
           />
-          <span className="text-muted-foreground">{post.author}</span>
+          <span className="text-sm sm:text-base text-muted-foreground">{post.author}</span>
         </div>
         <Image
           src={post.image || "/placeholder.svg"}
           alt={post.title}
           width={800}
           height={400}
-          className="w-full rounded-lg mb-6"
+          className="w-full rounded-lg mb-4 sm:mb-6 h-48 sm:h-64 lg:h-96 object-cover"
         />
-        <div className="prose max-w-none">
-          <p>{post.content}</p>
+        <div className="prose prose-sm sm:prose-base lg:prose-lg max-w-none">
+          <p className="text-sm sm:text-base lg:text-lg leading-relaxed">{post.content}</p>
         </div>
       </article>
     </div>

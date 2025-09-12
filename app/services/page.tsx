@@ -5,49 +5,49 @@ import Link from "next/link"
 
 export default function ServicesPage() {
   return (
-    <div className="container py-12 md:py-24">
+    <div className="container px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-16 lg:py-24">
       {/* Header Section */}
       <div className="mx-auto max-w-[800px] text-center">
-        <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl">Our Services</h1>
-        <p className="mt-4 text-xl text-muted-foreground">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tighter">Our Services</h1>
+        <p className="mt-4 text-lg sm:text-xl text-muted-foreground">
           Discover our comprehensive range of travel services designed to make your journey seamless and enjoyable.
         </p>
       </div>
 
       {/* Services Section */}
-      <div className="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <Plane className="h-10 w-10 text-primary" />
-            <CardTitle className="mt-4">Ticket Booking</CardTitle>
-            <CardDescription>Book flights easily with our user-friendly platform</CardDescription>
+      <div className="mt-12 sm:mt-16 grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 max-w-7xl mx-auto">
+        <Card className="w-full">
+          <CardHeader className="text-center sm:text-left">
+            <Plane className="h-8 w-8 sm:h-10 sm:w-10 text-primary mx-auto sm:mx-0" />
+            <CardTitle className="mt-4 text-lg sm:text-xl">Ticket Booking</CardTitle>
+            <CardDescription className="text-sm sm:text-base">Book flights easily with our user-friendly platform</CardDescription>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-2">
+            <ul className="space-y-2 mb-6">
               <li className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-primary" />
-                <span>Competitive pricing</span>
+                <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                <span className="text-sm sm:text-base">Competitive pricing</span>
               </li>
               <li className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-primary" />
-                <span>Multiple airlines</span>
+                <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                <span className="text-sm sm:text-base">Multiple airlines</span>
               </li>
               <li className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-primary" />
-                <span>Real-time availability</span>
+                <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                <span className="text-sm sm:text-base">Real-time availability</span>
               </li>
             </ul>
-            <Button className="mt-6 w-full" asChild>
+            <Button className="w-full" asChild>
               <Link href="/services/ticket-booking">Book Now</Link>
             </Button>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <GraduationCap className="h-10 w-10 text-primary" />
-            <CardTitle className="mt-4">Student Visa</CardTitle>
-            <CardDescription>Complete visa assistance for students</CardDescription>
+        <Card className="w-full">
+          <CardHeader className="text-center sm:text-left">
+            <GraduationCap className="h-8 w-8 sm:h-10 sm:w-10 text-primary mx-auto sm:mx-0" />
+            <CardTitle className="mt-4 text-lg sm:text-xl">Student Visa</CardTitle>
+            <CardDescription className="text-sm sm:text-base">Complete visa assistance for students</CardDescription>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2">

@@ -5,38 +5,38 @@ import { Briefcase, Check, FileText, Users } from "lucide-react"
 
 export default function BusinessVisaPage() {
   return (
-    <div className="container py-12 md:py-24">
+    <div className="container px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-24">
       {/* Header Section */}
       <div className="mx-auto max-w-[800px] text-center">
-        <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl">Business Visa Solutions</h1>
-        <p className="mt-4 text-xl text-muted-foreground">Professional visa services tailored for business travelers</p>
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tighter">Business Visa Solutions</h1>
+        <p className="mt-4 text-lg sm:text-xl text-muted-foreground">Professional visa services tailored for business travelers</p>
       </div>
 
       {/* Main Content */}
-      <div className="mt-16">
+      <div className="mt-12 sm:mt-16">
         <Tabs defaultValue="types" className="mx-auto max-w-[1000px]">
-          <TabsList className="grid w-full max-w-[600px] grid-cols-3">
-            <TabsTrigger value="types">Visa Types</TabsTrigger>
-            <TabsTrigger value="requirements">Requirements</TabsTrigger>
-            <TabsTrigger value="process">Process</TabsTrigger>
+          <TabsList className="grid w-full max-w-[600px] grid-cols-3 mx-auto">
+            <TabsTrigger value="types" className="text-xs sm:text-sm">Visa Types</TabsTrigger>
+            <TabsTrigger value="requirements" className="text-xs sm:text-sm">Requirements</TabsTrigger>
+            <TabsTrigger value="process" className="text-xs sm:text-sm">Process</TabsTrigger>
           </TabsList>
           <TabsContent value="types" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>Business Visa Categories</CardTitle>
-                <CardDescription>Different types of business visas available</CardDescription>
+                <CardTitle className="text-xl sm:text-2xl">Business Visa Categories</CardTitle>
+                <CardDescription className="text-sm sm:text-base">Different types of business visas available</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
                   {visaTypes.map((type, index) => (
                     <div key={index} className="space-y-2">
-                      <h3 className="font-semibold">{type.title}</h3>
-                      <p className="text-muted-foreground">{type.description}</p>
+                      <h3 className="font-semibold text-sm sm:text-base">{type.title}</h3>
+                      <p className="text-muted-foreground text-sm sm:text-base">{type.description}</p>
                       <ul className="mt-2 space-y-1">
                         {type.features.map((feature, idx) => (
                           <li key={idx} className="flex items-center gap-2">
-                            <Check className="h-4 w-4 text-primary" />
-                            <span className="text-sm">{feature}</span>
+                            <Check className="h-3 w-3 sm:h-4 sm:w-4 text-primary shrink-0" />
+                            <span className="text-xs sm:text-sm">{feature}</span>
                           </li>
                         ))}
                       </ul>

@@ -22,35 +22,50 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Card className="max-w-md mx-auto">
-        <CardHeader>
-          <CardTitle>Sign Up</CardTitle>
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-[60vh] flex items-center justify-center">
+      <Card className="w-full max-w-md mx-auto">
+        <CardHeader className="text-center">
+          <CardTitle className="text-xl sm:text-2xl">Create Account</CardTitle>
+          <p className="text-sm sm:text-base text-muted-foreground">Join us to start planning your adventures</p>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSignup} className="space-y-4">
-            <div>
+          <form onSubmit={handleSignup} className="space-y-4 sm:space-y-6">
+            <div className="space-y-2">
+              <label htmlFor="email" className="text-sm font-medium">Email</label>
               <Input
+                id="email"
                 type="email"
-                placeholder="Email"
+                placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                className="w-full"
               />
             </div>
-            <div>
+            <div className="space-y-2">
+              <label htmlFor="password" className="text-sm font-medium">Password</label>
               <Input
+                id="password"
                 type="password"
-                placeholder="Password"
+                placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                className="w-full"
               />
             </div>
             <Button type="submit" className="w-full">
-              Sign Up
+              Create Account
             </Button>
           </form>
+          <div className="mt-4 sm:mt-6 text-center">
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Already have an account?{" "}
+              <Button variant="link" className="p-0 h-auto text-xs sm:text-sm" onClick={() => router.push("/login")}>
+                Sign in here
+              </Button>
+            </p>
+          </div>
         </CardContent>
       </Card>
     </div>

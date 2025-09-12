@@ -46,29 +46,41 @@ const companyHistory = [
 
 export default function AboutPage() {
   return (
-    <div className="container mx-auto px-4 py-12">
-      <h1 className="text-4xl font-bold mb-8">About TravelEase</h1>
-      <p className="text-xl mb-12">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 sm:mb-8 text-center">About TravelEase</h1>
+      <p className="text-lg sm:text-xl mb-8 sm:mb-12 text-center max-w-4xl mx-auto">
         At TravelEase, we're passionate about making your travel dreams a reality. Our journey began with a simple idea:
         to create unforgettable experiences for every traveler. Today, we're proud to be your trusted partner in
         exploring the world.
       </p>
-      <h2 className="text-3xl font-semibold mb-6">Our History</h2>
-      <StickyScroll content={companyHistory} />
-      <div className="mt-12">
-        <h2 className="text-3xl font-semibold mb-6">Our Mission</h2>
-        <p className="text-lg mb-4">
+      <h2 className="text-2xl sm:text-3xl font-semibold mb-4 sm:mb-6 text-center">Our History</h2>
+      <div className="max-w-6xl mx-auto">
+        <StickyScroll content={companyHistory} />
+      </div>
+      <div className="mt-8 sm:mt-12 max-w-4xl mx-auto">
+        <h2 className="text-2xl sm:text-3xl font-semibold mb-4 sm:mb-6 text-center">Our Mission</h2>
+        <p className="text-base sm:text-lg mb-6 sm:mb-8 text-center">
           To inspire and empower travelers by providing exceptional service, innovative solutions, and unforgettable
           experiences that broaden horizons and create lasting memories.
         </p>
-        <h2 className="text-3xl font-semibold mb-6 mt-8">Our Values</h2>
-        <ul className="list-disc list-inside text-lg space-y-2">
-          <li>Customer-Centric Approach</li>
-          <li>Innovation in Travel Technology</li>
-          <li>Sustainability and Responsible Tourism</li>
-          <li>Cultural Respect and Understanding</li>
-          <li>Continuous Improvement and Learning</li>
-        </ul>
+        <h2 className="text-2xl sm:text-3xl font-semibold mb-4 sm:mb-6 text-center">Our Values</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="text-center p-4 border rounded-lg">
+            <h3 className="font-semibold mb-2">Customer-Centric Approach</h3>
+          </div>
+          <div className="text-center p-4 border rounded-lg">
+            <h3 className="font-semibold mb-2">Innovation in Travel Technology</h3>
+          </div>
+          <div className="text-center p-4 border rounded-lg">
+            <h3 className="font-semibold mb-2">Sustainability and Responsible Tourism</h3>
+          </div>
+          <div className="text-center p-4 border rounded-lg">
+            <h3 className="font-semibold mb-2">Cultural Respect and Understanding</h3>
+          </div>
+          <div className="text-center p-4 border rounded-lg sm:col-span-2 lg:col-span-1">
+            <h3 className="font-semibold mb-2">Continuous Improvement and Learning</h3>
+          </div>
+        </div>
       </div>
     </div>
   )
