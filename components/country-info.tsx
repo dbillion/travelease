@@ -11,14 +11,16 @@ import { WeatherCharts } from "@/components/weather-charts"
 import { Loader2 } from "lucide-react"
 
 // Dynamically import the map component with no SSR
-const CountryMap = dynamic(() => import("@/components/country-map").then(mod => mod.CountryMap), { 
+const CountryMap = dynamic(() => import("@/components/country-map").then((mod) => mod.CountryMap), {
   ssr: false,
   loading: () => <div className="h-full w-full bg-gray-200 animate-pulse rounded-lg" />
 })
 
 interface CountryData {
-  name: string
-  capital: string
+  name: {
+    common: string
+  }
+  capital: string[]
   population: number
   languages: { [key: string]: string }
   flags: { png: string }
@@ -43,8 +45,6 @@ interface LeaderData {
   position: string
   summary: string
 }
-
-
 
 export default function CountryInfo({ country }: { country: string }) {
   const [countryData, setCountryData] = useState<CountryData | null>(null)
@@ -257,7 +257,7 @@ export default function CountryInfo({ country }: { country: string }) {
 
         <TabsContent value="weather">
           {selectedLocation ? (
-            <WeatherCharts latitude={selectedLocation.latitude} longitude={selectedLocation.longitude} />
+            <WeatherCharts city={selectedLocation.name} />
           ) : (
             <Card>
               <CardContent className="p-6 text-center text-muted-foreground">
@@ -270,4 +270,3 @@ export default function CountryInfo({ country }: { country: string }) {
     </div>
   )
 }
-

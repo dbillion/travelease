@@ -1,12 +1,9 @@
-import { type NextRequest, NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { Groq } from "groq-sdk"
 
-interface TripParams {
-  destination: string
-  duration: number
-  budget: number
-  interests: string
-}
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
+})
 
 interface Activity {
   time: string
@@ -33,50 +30,49 @@ interface Hotel {
   pricePerNight: number
   location: string
   rating: number
-  description?: string
+  description: string
 }
 
 interface Attraction {
   name: string
   estimatedCost: number
   suggestedDuration: string
-  description?: string
-}
-
-interface ItineraryResponse {
-  budgetSummary: {
-    totalBudget: number
-    savingsBuffer: number
-    plannedSpend: number
-    remaining: number
-    dailySpending: number
-    weeklyOverview: number
-  }
-  dailyItinerary: DayItinerary[]
-  hotelRecommendations: Hotel[]
-  mustSeeAttractions: Attraction[]
-}
-
-interface RawActivity {
-  time: string
   description: string
 }
 
-const cleanJSON = (text: string): string => {
+interface BudgetBreakdown {
+  savingsBuffer: number
+  dailyBudget: number
+  availableBudget: number
+  weeklyBudget: number
+  dailyBreakdown: DayBudget
+}
+
+const cleanJSON = (str: string): string => {
   try {
-    // First try to find JSON within markdown code blocks
-    const jsonMatch = text.match(/```json\s*([\s\S]*?)\s*```/)
-    if (jsonMatch) {
-      return jsonMatch[1].trim()
+    // Remove any text before the first '{' or '['
+    const jsonStart = Math.min(
+      str.indexOf("{") === -1 ? Infinity : str.indexOf("{"),
+      str.indexOf("[") === -1 ? Infinity : str.indexOf("[")
+    )
+    if (jsonStart === Infinity) {
+      throw new Error("No JSON object or array found")
     }
+    str = str.substring(jsonStart)
 
-    // If no markdown blocks found, try to find raw JSON
-    const rawMatch = text.match(/\{[\s\S]*\}/)
-    if (rawMatch) {
-      return rawMatch[0].trim()
+    // Remove any text after the last '}' or ']'
+    const jsonEnd = Math.max(
+      str.lastIndexOf("}"),
+      str.lastIndexOf("]")
+    )
+    if (jsonEnd === -1) {
+      throw new Error("No closing JSON bracket found")
     }
+    str = str.substring(0, jsonEnd + 1)
 
-    throw new Error("No valid JSON found in response")
+    // Try to parse and re-stringify to ensure valid JSON
+    JSON.parse(str)
+    return str
   } catch (error) {
     console.error("Error cleaning JSON:", error)
     throw new Error("Failed to parse AI response")
@@ -90,17 +86,20 @@ const calculateBudgets = (totalBudget: number, duration: number) => {
   const availableBudget = totalBudget - savingsBuffer
   const dailyBudget = availableBudget / duration
 
+  const dailyBreakdown: DayBudget = {
+    accommodation: dailyBudget * 0.4, // 40% for accommodation
+    food: dailyBudget * 0.2, // 20% for food
+    transportation: dailyBudget * 0.2, // 20% for transportation
+    activities: dailyBudget * 0.2, // 20% for activities
+    total: dailyBudget // Add the total property
+  }
+
   return {
     savingsBuffer,
     dailyBudget,
     availableBudget,
     weeklyBudget: dailyBudget * 7,
-    dailyBreakdown: {
-      accommodation: dailyBudget * 0.4, // 40% for accommodation
-      food: dailyBudget * 0.2, // 20% for food
-      transportation: dailyBudget * 0.2, // 20% for transportation
-      activities: dailyBudget * 0.2, // 20% for activities
-    },
+    dailyBreakdown,
   }
 }
 
@@ -109,232 +108,188 @@ const BUDGET_ALLOCATIONS = {
   FOOD: 0.2,
   TRANSPORTATION: 0.2,
   ACTIVITIES: 0.2,
-} as const
-
-const validateBudgetAllocations = (allocations: typeof BUDGET_ALLOCATIONS): boolean =>
-  Object.values(allocations).reduce((sum, value) => sum + value, 0) === 1
-
-type BudgetCategory = keyof typeof BUDGET_ALLOCATIONS
-type DailyBudgetCalculation = Record<Lowercase<BudgetCategory>, number> & { total: number }
-
-const calculateDailyAmount = (totalBudget: number, duration: number): number => totalBudget / duration
-
-const calculateCategoryAmount = (dailyAmount: number, allocation: number): number => dailyAmount * allocation
-
-const calculateDailyBudgets = (totalBudget: number, duration: number): DailyBudgetCalculation => {
-  if (totalBudget <= 0 || duration <= 0) {
-    throw new Error("Budget and duration must be positive numbers")
-  }
-
-  if (!validateBudgetAllocations(BUDGET_ALLOCATIONS)) {
-    throw new Error("Budget allocations must sum to 1")
-  }
-
-  const dailyAmount = calculateDailyAmount(totalBudget, duration)
-
-  const budgetCategories = Object.entries(BUDGET_ALLOCATIONS).reduce(
-    (acc, [category, allocation]) => ({
-      ...acc,
-      [category.toLowerCase()]: calculateCategoryAmount(dailyAmount, allocation),
-    }),
-    {} as Record<Lowercase<BudgetCategory>, number>,
-  )
-
-  return {
-    ...budgetCategories,
-    total: dailyAmount,
-  }
 }
 
-const calculateActivityCost = (activityBudget: number, numberOfActivities: number): number =>
-  numberOfActivities > 0 ? activityBudget / numberOfActivities : 0
-
-const formatActivities = (rawActivities: RawActivity[] | string[], dailyActivityBudget: number): Activity[] => {
-  if (!Array.isArray(rawActivities) || rawActivities.length === 0) {
+const formatActivities = (activities: any[], budget: number): Activity[] => {
+  if (!Array.isArray(activities)) {
     return []
   }
 
-  const numberOfActivities = rawActivities.length
-  const costPerActivity = calculateActivityCost(dailyActivityBudget, numberOfActivities)
-
-  return rawActivities.map((activity) => {
-    if (typeof activity === "string") {
-      return {
-        time: "All day",
-        description: activity,
-        cost: costPerActivity,
-      }
-    } else {
-      return {
-        time: activity.time || "All day",
-        description: activity.description || "",
-        cost: costPerActivity,
-      }
-    }
-  })
+  return activities.map((activity: any): Activity => ({
+    time: activity.time || "Flexible",
+    description: activity.description || "Enjoy your time",
+    cost: activity.cost || budget / 4, // Distribute budget evenly if not specified
+  }))
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    const params = await request.json()
-
-    // Validate input parameters
-    if (!params.destination || !params.duration || !params.budget || !params.interests) {
-      return NextResponse.json({ error: "Missing required parameters", details: { params } }, { status: 400 })
-    }
-
-    if (!process.env.GROQ_API_KEY) {
-      console.error("GROQ_API_KEY is not defined")
-      return NextResponse.json({ error: "API configuration error", details: "Missing API key" }, { status: 500 })
-    }
-
-    const groq = new Groq({
-      apiKey: process.env.GROQ_API_KEY,
-    })
-
-    const prompt = `As an AI travel planner, create a detailed ${params.duration}-day itinerary for a trip to ${params.destination} with a budget of $${params.budget}. The traveler is interested in ${params.interests}.
-
-    Please structure each day's activities into Morning, Afternoon, and Evening segments.
+    const body = await req.json()
+    console.log("Received request body:", body);
     
-    Return the result as a JSON object with the following structure:
+    const { destination, duration, budget, interests, travelType } = body
+
+    if (!destination || !duration || !budget || !interests || !travelType) {
+      return NextResponse.json(
+        { error: "Missing required parameters" },
+        { status: 400 }
+      )
+    }
+    
+    console.log("Parameters validated successfully");
+
+    const prompt = `You are an expert travel planner AI. Create a detailed travel itinerary for a ${duration}-day trip to ${destination} with a budget of $${budget}. The traveler is interested in ${interests.join(
+      ", "
+    )} and prefers a ${travelType} style trip.
+
+    Please provide the following information in valid JSON format:
+    1. A daily itinerary with activities, times, and estimated costs
+    2. Hotel recommendations with names, prices, locations, ratings, and descriptions
+    3. Must-see attractions with names, estimated costs, suggested durations, and descriptions
+
+    Budget breakdown:
+    - Accommodation: ${(budget * BUDGET_ALLOCATIONS.ACCOMMODATION).toFixed(2)}
+    - Food: ${(budget * BUDGET_ALLOCATIONS.FOOD).toFixed(2)}
+    - Transportation: ${(budget * BUDGET_ALLOCATIONS.TRANSPORTATION).toFixed(2)}
+    - Activities: ${(budget * BUDGET_ALLOCATIONS.ACTIVITIES).toFixed(2)}
+
+    Requirements:
+    - Provide exactly ${duration} days of activities
+    - Each day should have 3-5 activities
+    - Include a mix of the requested interests
+    - Ensure activities fit within the allocated budget
+    - For hotel recommendations, provide 3 options at different price points
+    - For attractions, list 5-7 must-see places
+
+    Format the response as a valid JSON object with the following structure:
     {
       "dailyItinerary": [
         {
           "day": 1,
           "activities": [
             {
-              "time": "Morning",
-              "description": "Detailed morning activity description"
-            },
-            {
-              "time": "Afternoon",
-              "description": "Detailed afternoon activity description"
-            },
-            {
-              "time": "Evening",
-              "description": "Detailed evening activity description"
+              "time": "09:00 AM",
+              "description": "Visit local museum",
+              "cost": 15
             }
           ]
         }
       ],
       "hotelRecommendations": [
         {
-          "name": "Hotel Name",
-          "location": "Hotel Location",
-          "description": "Hotel Description"
+          "name": "Grand Hotel",
+          "pricePerNight": 120,
+          "location": "City Center",
+          "rating": 4.5,
+          "description": "Luxury hotel with excellent amenities"
         }
       ],
       "mustSeeAttractions": [
         {
-          "name": "Attraction Name",
-          "description": "Attraction Description"
+          "name": "Historic Landmark",
+          "estimatedCost": 20,
+          "suggestedDuration": "2-3 hours",
+          "description": "A must-visit historical site"
         }
       ]
     }`
 
-    try {
-      const completion = await groq.chat.completions.create({
-        messages: [
-          {
-            role: "system",
-            content: "You are an experienced travel planner who creates detailed, personalized travel itineraries.",
-          },
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
-        model: "qwen/qwen3-32b",
-        temperature: 0.7,
-        max_tokens: 4096,
-        top_p: 0.95,
-        stream: false,
-      })
-
-      const rawOutput = completion.choices[0]?.message?.content
-
-      if (!rawOutput) {
-        throw new Error("No content received from AI model")
-      }
-
-      console.log("Raw AI Output:", rawOutput) // Debug log
-
-      const cleanedJSON = cleanJSON(rawOutput)
-      console.log("Cleaned JSON:", cleanedJSON) // Debug log
-
-      let parsed
-      try {
-        parsed = JSON.parse(cleanedJSON)
-      } catch (parseError) {
-        console.error("JSON Parse Error:", parseError)
-        return NextResponse.json({ error: "Failed to parse AI response", details: parseError.message }, { status: 500 })
-      }
-
-      const budgets = calculateBudgets(params.budget, params.duration)
-
-      const dailyItinerary = Array.from({ length: params.duration }, (_, index): DayItinerary => {
-        const dayData = parsed.dailyItinerary?.[index] || { activities: [] }
-
-        return {
-          day: index + 1,
-          activities: formatActivities(dayData.activities || [], budgets.dailyBreakdown.activities),
-          budget: budgets.dailyBreakdown,
-        }
-      })
-
-      const hotelRecommendations = (parsed.hotelRecommendations || []).map(
-        (hotel: any): Hotel => ({
-          name: hotel.name || "Recommended Hotel",
-          pricePerNight: budgets.dailyBreakdown.accommodation,
-          location: hotel.location || params.destination,
-          rating: 4,
-          description: hotel.description || "A comfortable stay in a great location.",
-        }),
-      )
-
-      const mustSeeAttractions = (parsed.mustSeeAttractions || []).map(
-        (attraction: any): Attraction => ({
-          name: attraction.name || "Must-See Attraction",
-          estimatedCost: budgets.dailyBreakdown.activities / 4,
-          suggestedDuration: "2-3 hours",
-          description: attraction.description || "A popular attraction worth visiting.",
-        }),
-      )
-
-      const itineraryResponse: ItineraryResponse = {
-        budgetSummary: {
-          totalBudget: params.budget,
-          savingsBuffer: budgets.savingsBuffer,
-          plannedSpend: budgets.availableBudget,
-          remaining: budgets.savingsBuffer,
-          dailySpending: budgets.dailyBudget,
-          weeklyOverview: budgets.weeklyBudget,
+    console.log("Making request to Groq API");
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        {
+          role: "user",
+          content: prompt,
         },
-        dailyItinerary: dailyItinerary.map((day, index) => ({
-          ...day,
-          budget: {
-            accommodation: budgets.dailyBreakdown.accommodation,
-            food: budgets.dailyBreakdown.food,
-            transportation: budgets.dailyBreakdown.transportation,
-            activities: budgets.dailyBreakdown.activities,
-            total: budgets.dailyBudget,
-          },
-        })),
-        hotelRecommendations,
-        mustSeeAttractions,
-      }
+      ],
+      model: "llama3-8b-8192",
+      temperature: 0.7,
+      max_tokens: 2048,
+    })
+    console.log("Received response from Groq API");
 
-      return NextResponse.json(itineraryResponse)
-    } catch (aiError) {
-      console.error("AI Service Error:", aiError)
-      return NextResponse.json(
-        { error: "Failed to generate itinerary from AI service", details: aiError.message },
-        { status: 500 },
-      )
+    const rawOutput = chatCompletion.choices[0]?.message?.content || ""
+    console.log("Raw AI Output:", rawOutput) // Debug log
+
+    // Clean the JSON output
+    const cleanedJSON = cleanJSON(rawOutput)
+    console.log("Cleaned JSON:", cleanedJSON) // Debug log
+
+    let parsed
+    try {
+      parsed = JSON.parse(cleanedJSON)
+    } catch (parseError: unknown) {
+      console.error("JSON Parse Error:", parseError)
+      if (parseError instanceof Error) {
+        return NextResponse.json({ error: "Failed to parse AI response", details: parseError.message }, { status: 500 })
+      } else {
+        return NextResponse.json({ error: "Failed to parse AI response", details: "Unknown error" }, { status: 500 })
+      }
     }
-  } catch (error) {
-    console.error("Server Error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+
+    const budgets = calculateBudgets(budget, duration)
+
+    const dailyItinerary = Array.from({ length: duration }, (_, index): DayItinerary => {
+      const dayData = parsed.dailyItinerary?.[index] || { activities: [] }
+
+      return {
+        day: index + 1,
+        activities: formatActivities(dayData.activities || [], budgets.dailyBreakdown.activities),
+        budget: budgets.dailyBreakdown,
+      }
+    })
+
+    const hotelRecommendations = (parsed.hotelRecommendations || []).map(
+      (hotel: any): Hotel => ({
+        name: hotel.name || "Recommended Hotel",
+        pricePerNight: hotel.pricePerNight || budgets.dailyBreakdown.accommodation,
+        location: hotel.location || destination,
+        rating: hotel.rating || 4,
+        description: hotel.description || "A comfortable stay in a great location.",
+      }),
+    )
+
+    const mustSeeAttractions = (parsed.mustSeeAttractions || []).map(
+      (attraction: any): Attraction => ({
+        name: attraction.name || "Must-See Attraction",
+        estimatedCost: attraction.estimatedCost || budgets.dailyBreakdown.activities / 4,
+        suggestedDuration: attraction.suggestedDuration || "2-3 hours",
+        description: attraction.description || "A popular attraction worth visiting.",
+      }),
+    )
+
+    // Calculate budget summary values
+    const totalCost = budget;
+    const savingsBuffer = budgets.savingsBuffer;
+    const dailySpending = budgets.dailyBudget;
+    const weeklyOverview = budgets.weeklyBudget;
+    const plannedSpend = budgets.availableBudget;
+    const remaining = 0; // This would need to be calculated based on actual spending
+
+    const response = {
+      dailyItinerary: dailyItinerary,
+      hotelRecommendations: hotelRecommendations,
+      mustSeeAttractions: mustSeeAttractions,
+      budgetBreakdown: {
+        totalCost: totalCost,
+        remaining: remaining,
+      },
+      budgetSummary: {
+        savingsBuffer: savingsBuffer,
+        dailySpending: dailySpending,
+        weeklyOverview: weeklyOverview,
+        plannedSpend: plannedSpend,
+        remaining: remaining,
+      },
+    }
+
+    return NextResponse.json(response)
+  } catch (error: unknown) {
+    console.error("API Error:", error)
+    if (error instanceof Error) {
+      return NextResponse.json({ error: "Failed to generate itinerary", details: error.message }, { status: 500 })
+    } else {
+      return NextResponse.json({ error: "Failed to generate itinerary", details: "Unknown error" }, { status: 500 })
+    }
   }
 }
-

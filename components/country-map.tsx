@@ -31,7 +31,12 @@ export function CountryMap({ center, zoom = 5 }: CountryMapProps) {
   }
 
   return (
-    <MapContainer center={center} zoom={zoom} style={{ height: "100%", width: "100%" }} className="rounded-lg">
+    <MapContainer 
+      center={center} 
+      zoom={zoom} 
+      style={{ height: "100%", width: "100%" }} 
+      className="rounded-lg"
+    >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       <Marker position={center} />
     </MapContainer>

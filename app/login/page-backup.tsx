@@ -32,23 +32,6 @@ export default function LoginPage() {
 
   if (isLoggedIn) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <Card className="max-w-md mx-auto">
-          <CardHeader>
-            <CardTitle>Welcome Back!</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-4">You are now logged in.</p>
-            <Button onClick={() => router.push("/services/ai-planner")}>Go to AI Planner</Button>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
-  return (
-      if (isLoggedIn) {
-    return (
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-[50vh] flex items-center justify-center">
         <Card className="w-full max-w-md mx-auto">
           <CardHeader className="text-center">
@@ -113,4 +96,3 @@ export default function LoginPage() {
     </div>
   )
 }
-

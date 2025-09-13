@@ -145,7 +145,15 @@ export default function MultiStepFormFixed({ onSubmit, loading }: MultiStepFormP
 
   const handleFormSubmit = async (data: FormData) => {
     console.log("Form submitted:", data)
-    onSubmit(data)
+    // Ensure we're passing the correct data structure to the parent component
+    onSubmit({
+      country: data.country,
+      city: data.city,
+      budget: data.budget,
+      days: data.days,
+      touring: data.touring,
+      interests: data.interests
+    })
   }
 
   const handleInterestToggle = (interestId: string, checked: boolean) => {
@@ -431,7 +439,7 @@ export default function MultiStepFormFixed({ onSubmit, loading }: MultiStepFormP
                 rules={{
                   validate: (value) => value.length > 0 || "Please select at least one interest"
                 }}
-                render={() => null}
+                render={() => <></>}
               />
               {errors.interests && (
                 <p className="text-red-500 text-sm font-medium">{errors.interests.message}</p>
@@ -457,7 +465,7 @@ export default function MultiStepFormFixed({ onSubmit, loading }: MultiStepFormP
                             </div>
                           </div>
                         </div>
-                      ) : null
+                      ) : (<></>)
                     })}
                   </div>
                   <div className="mt-6 p-4 bg-white rounded-lg border border-purple-200">
@@ -585,7 +593,7 @@ export default function MultiStepFormFixed({ onSubmit, loading }: MultiStepFormP
                         <span key={`interest-${interestId}-${index}`} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
                           {interest.icon} {interest.label}
                         </span>
-                      ) : null
+                      ) : (<></>)
                     })}
                   </div>
                 </div>
@@ -605,7 +613,7 @@ export default function MultiStepFormFixed({ onSubmit, loading }: MultiStepFormP
         )
 
       default:
-        return null
+        return <></>
     }
   }
 

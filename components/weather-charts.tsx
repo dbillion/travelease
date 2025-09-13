@@ -21,8 +21,7 @@ import { fetchWeatherApi } from "openmeteo"
 import { Loader2 } from "lucide-react"
 
 interface WeatherChartsProps {
-  latitude: number
-  longitude: number
+  city: string
 }
 
 interface WeatherData {
@@ -41,12 +40,40 @@ interface WeatherData {
   }
 }
 
-export function WeatherCharts({ latitude, longitude }: WeatherChartsProps) {
+export function WeatherCharts({ city }: WeatherChartsProps) {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number } | null>(null)
 
+  // Fetch coordinates for the city
+  useEffect(() => {
+    const fetchCoordinates = async () => {
+      try {
+        const response = await fetch(
+          `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`
+        )
+        const data = await response.json()
+        if (data && data.results && data.results[0]) {
+          setCoordinates({
+            latitude: data.results[0].latitude,
+            longitude: data.results[0].longitude
+          })
+        }
+      } catch (error) {
+        console.error("Error fetching coordinates:", error)
+      }
+    }
+
+    if (city) {
+      fetchCoordinates()
+    }
+  }, [city])
+
+  // Fetch weather data when coordinates are available
   useEffect(() => {
     const fetchData = async () => {
+      if (!coordinates) return
+      
       setLoading(true)
       try {
         const startDate = new Date()
@@ -54,8 +81,8 @@ export function WeatherCharts({ latitude, longitude }: WeatherChartsProps) {
         endDate.setDate(endDate.getDate() + 7)
 
         const params = {
-          latitude,
-          longitude,
+          latitude: coordinates.latitude,
+          longitude: coordinates.longitude,
           hourly: ["temperature_2m", "relative_humidity_2m", "precipitation", "wind_speed_10m"],
           daily: ["temperature_2m_max", "temperature_2m_min", "precipitation_sum"],
           timezone: "auto",
@@ -101,8 +128,10 @@ export function WeatherCharts({ latitude, longitude }: WeatherChartsProps) {
       }
     }
 
-    fetchData()
-  }, [latitude, longitude])
+    if (coordinates) {
+      fetchData()
+    }
+  }, [coordinates])
 
   if (loading) {
     return (
@@ -239,4 +268,3 @@ export function WeatherCharts({ latitude, longitude }: WeatherChartsProps) {
     </Tabs>
   )
 }
-

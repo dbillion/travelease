@@ -9,6 +9,8 @@ import { FAQSection } from "@/components/faq-section"
 import { StatisticsSection } from "@/components/statistics-section"
 import { HeroTextAnimation } from "@/components/hero-text-animation"
 import UnicornStudio from "@/components/unicorn-studio"
+import { Star } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -131,8 +133,44 @@ export default function Home() {
               </div>
             </section>
 
-            {/* Testimonials Marquee Section */}
-            <TestimonialMarquee />
+            {/* Testimonials Section */}
+            <section className="py-8 sm:py-12 md:py-16 lg:py-24">
+              <div className="container px-4 sm:px-6 lg:px-8">
+                <h2 className="text-center text-2xl font-bold tracking-tighter sm:text-3xl md:text-4xl">Customer Testimonials</h2>
+                <p className="mt-4 text-center text-sm sm:text-base md:text-lg text-muted-foreground">
+                  Our clients love the seamless booking experience!
+                </p>
+                <div className="mt-8 sm:mt-12 grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
+                  {testimonials.map((testimonial, index) => (
+                    <Card key={index} className="w-full">
+                      <CardHeader>
+                        <div className="flex items-center gap-2 justify-center sm:justify-start">
+                          {[...Array(5)].map((_, i) => (
+                            <Star key={i} className="h-4 w-4 fill-primary text-primary" />
+                          ))}
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-muted-foreground text-sm sm:text-base text-center sm:text-left">{testimonial.text}</p>
+                        <div className="mt-4 flex items-center gap-4 justify-center sm:justify-start">
+                          <Image
+                            src={testimonial.avatar || "/placeholder.svg"}
+                            alt={testimonial.name}
+                            width={40}
+                            height={40}
+                            className="rounded-full"
+                          />
+                          <div className="text-center sm:text-left">
+                            <p className="font-semibold text-sm sm:text-base">{testimonial.name}</p>
+                            <p className="text-xs sm:text-sm text-muted-foreground">{testimonial.title}</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            </section>
 
             {/* Statistics Section */}
             <StatisticsSection />
@@ -163,3 +201,24 @@ export default function Home() {
     </AnimatePresence>
   )
 }
+
+const testimonials = [
+  {
+    text: "The service was exceptional and saved me so much time!",
+    name: "John Doe",
+    title: "Student, University",
+    avatar: "/placeholder.svg",
+  },
+  {
+    text: "I couldn't have asked for a better travel agency!",
+    name: "Jane Smith",
+    title: "Manager, Company",
+    avatar: "/placeholder.svg",
+  },
+  {
+    text: "They made my visa process so easy and stress-free!",
+    name: "Emily Johnson",
+    title: "Entrepreneur, Startup",
+    avatar: "/placeholder.svg",
+  },
+]

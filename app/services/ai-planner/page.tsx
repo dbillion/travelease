@@ -79,7 +79,7 @@ export default function AIPlannerPage() {
     }
   }, [router])
 
-  const handleSubmit = async (data: { 
+   const handleSubmit = async (data: { 
     country: string; 
     city: { 
       name: string; 
@@ -91,6 +91,7 @@ export default function AIPlannerPage() {
       country_code: string; 
     } | null; 
     budget: number; 
+    days: number;
     touring: "country" | "city" | null;
     interests: string[] 
   }) => {
@@ -112,9 +113,10 @@ export default function AIPlannerPage() {
         },
         body: JSON.stringify({
           destination,
-          duration: 7, // Default duration, can be customized
+          duration: data.days,
           budget: data.budget,
-          interests: data.interests.join(", "),
+          interests: data.interests,
+          travelType: data.touring,
         }),
       })
 
@@ -449,4 +451,3 @@ export default function AIPlannerPage() {
     </div>
   )
 }
-
