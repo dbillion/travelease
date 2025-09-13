@@ -99,3 +99,31 @@
   }
 }
 
+@layer utilities {
+  /* Hide Unicorn Studio labels and branding */
+  [data-us-project] .us-label,
+  [data-us-project] .us-branding,
+  [data-us-project] .us-watermark,
+  [data-us-project] [class*="label"],
+  [data-us-project] [class*="branding"],
+  [data-us-project] [class*="watermark"],
+  [data-us-project] a[href*="unicorn"],
+  [data-us-project] a[href*="studio"] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  
+  /* Ensure Unicorn Studio container doesn't show overflow */
+  [data-us-project] {
+    overflow: hidden !important;
+  }
+  
+  /* Force hide any bottom labels or credits */
+  [data-us-project] > * {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+}
+

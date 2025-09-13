@@ -41,12 +41,14 @@ export default function Home() {
         <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
           <div className="flex flex-col">
             {/* Hero Section */}
-            <section className="relative px-4 sm:px-6 lg:px-8 min-h-screen flex items-center">
+            <section className="relative px-4 sm:px-6 lg:px-8 h-[75vh] max-h-[600px] flex items-center overflow-hidden">
               {/* Unicorn Studio Background */}
-              <div className="absolute inset-0 z-0">
+              <div className="absolute inset-0 z-0 overflow-hidden">
                 <UnicornStudio 
                   projectId="fmaHM5RrQgQSCnPzEugd"
-                  className="w-full h-full"
+                  className="w-full h-full scale-110 transform origin-center"
+                  height="120%"
+                  hideLabels={true}
                 />
               </div>
               

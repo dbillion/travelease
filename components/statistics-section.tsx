@@ -142,12 +142,51 @@ export const StatisticsSection: React.FC<StatisticsSectionProps> = ({ className 
           });
         },
         onEnterBack: () => {
+          // Animate cards in when scrolling back up
           gsap.to(cards, {
             y: 0,
             opacity: 1,
             duration: 0.8,
             stagger: 0.1,
             ease: "back.out(1.7)"
+          });
+          
+          // Re-animate numbers when entering back
+          values.forEach((value, index) => {
+            const finalText = statistics[index].value;
+            const isNumber = finalText.match(/\d+/);
+            
+            if (isNumber) {
+              const numberValue = parseInt(finalText.replace(/[^\d]/g, ''));
+              const suffix = finalText.replace(/[\d,]/g, '');
+              
+              gsap.fromTo(value, 
+                { textContent: "0" + suffix },
+                {
+                  textContent: finalText,
+                  duration: 1.5,
+                  delay: index * 0.1,
+                  ease: "power2.out",
+                  snap: { textContent: 1 },
+                  onUpdate: function() {
+                    const current = Math.floor(this.targets()[0].textContent.replace(/[^\d]/g, ''));
+                    if (current < numberValue) {
+                      this.targets()[0].textContent = current.toLocaleString() + suffix;
+                    }
+                  }
+                }
+              );
+            }
+          });
+        },
+        onLeaveBack: () => {
+          // Animate cards out when scrolling back up past the trigger
+          gsap.to(cards, {
+            y: -50,
+            opacity: 0,
+            duration: 0.5,
+            stagger: 0.1,
+            ease: "power2.in"
           });
         }
       });

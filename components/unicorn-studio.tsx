@@ -5,9 +5,11 @@ import { useEffect, useRef } from "react"
 interface UnicornStudioProps {
   projectId: string
   className?: string
+  height?: string
+  hideLabels?: boolean
 }
 
-export default function UnicornStudio({ projectId, className = "" }: UnicornStudioProps) {
+export default function UnicornStudio({ projectId, className = "", height = "100%", hideLabels = true }: UnicornStudioProps) {
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -20,7 +22,15 @@ export default function UnicornStudio({ projectId, className = "" }: UnicornStud
     const unicornDiv = document.createElement('div')
     unicornDiv.setAttribute('data-us-project', projectId)
     unicornDiv.style.width = '100%'
-    unicornDiv.style.height = '100%'
+    unicornDiv.style.height = height
+    unicornDiv.style.overflow = 'hidden'
+    unicornDiv.style.position = 'relative'
+    
+    // Add additional styles to crop bottom area where labels might appear
+    if (hideLabels) {
+      unicornDiv.style.clipPath = 'inset(0 0 60px 0)' // Crop bottom 60px where labels usually appear
+      unicornDiv.style.marginBottom = '-60px' // Compensate for the cropped area
+    }
     
     containerRef.current.appendChild(unicornDiv)
 
@@ -72,8 +82,16 @@ export default function UnicornStudio({ projectId, className = "" }: UnicornStud
   return (
     <div 
       ref={containerRef}
-      className={className}
-    />
+      className={`relative ${className}`}
+      style={{ overflow: 'hidden' }}
+    >
+      {hideLabels && (
+        <div 
+          className="absolute bottom-0 left-0 right-0 z-10 h-20 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"
+          style={{ backdropFilter: 'blur(10px)' }}
+        />
+      )}
+    </div>
   )
 }
 
@@ -82,7 +100,7 @@ declare global {
   interface Window {
     UnicornStudio: {
       isInitialized: boolean
-      init?: () => void
+      init: () => void
     }
   }
 }
