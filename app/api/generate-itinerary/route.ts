@@ -50,15 +50,20 @@ interface BudgetBreakdown {
 
 const cleanJSON = (str: string): string => {
   try {
+    console.log("Raw response length:", str.length)
+    console.log("Raw response preview:", str.substring(0, 200) + "...")
+
     // Remove any text before the first '{' or '['
     const jsonStart = Math.min(
       str.indexOf("{") === -1 ? Infinity : str.indexOf("{"),
       str.indexOf("[") === -1 ? Infinity : str.indexOf("[")
     )
     if (jsonStart === Infinity) {
+      console.error("No JSON object or array found in response")
       throw new Error("No JSON object or array found")
     }
     str = str.substring(jsonStart)
+    console.log("After removing prefix:", str.substring(0, 100) + "...")
 
     // Remove any text after the last '}' or ']'
     const jsonEnd = Math.max(
@@ -66,16 +71,20 @@ const cleanJSON = (str: string): string => {
       str.lastIndexOf("]")
     )
     if (jsonEnd === -1) {
+      console.error("No closing JSON bracket found in response")
       throw new Error("No closing JSON bracket found")
     }
     str = str.substring(0, jsonEnd + 1)
+    console.log("After removing suffix:", str.substring(0, 100) + "...")
 
     // Try to parse and re-stringify to ensure valid JSON
-    JSON.parse(str)
-    return str
+    const parsed = JSON.parse(str)
+    console.log("JSON parsing successful")
+    return JSON.stringify(parsed) // Return clean, formatted JSON
   } catch (error) {
     console.error("Error cleaning JSON:", error)
-    throw new Error("Failed to parse AI response")
+    console.error("Problematic string:", str)
+    throw new Error(`Failed to parse AI response: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }
 
@@ -142,16 +151,18 @@ export async function POST(req: NextRequest) {
       ", "
     )} and prefers a ${travelType} style trip.
 
+    CRITICAL: You must respond with ONLY valid JSON. No additional text, explanations, or formatting. Start your response with { and end with }.
+
     Please provide the following information in valid JSON format:
     1. A daily itinerary with activities, times, and estimated costs
     2. Hotel recommendations with names, prices, locations, ratings, and descriptions
     3. Must-see attractions with names, estimated costs, suggested durations, and descriptions
 
     Budget breakdown:
-    - Accommodation: ${(budget * BUDGET_ALLOCATIONS.ACCOMMODATION).toFixed(2)}
-    - Food: ${(budget * BUDGET_ALLOCATIONS.FOOD).toFixed(2)}
-    - Transportation: ${(budget * BUDGET_ALLOCATIONS.TRANSPORTATION).toFixed(2)}
-    - Activities: ${(budget * BUDGET_ALLOCATIONS.ACTIVITIES).toFixed(2)}
+    - Accommodation: $${(budget * BUDGET_ALLOCATIONS.ACCOMMODATION).toFixed(2)}
+    - Food: $${(budget * BUDGET_ALLOCATIONS.FOOD).toFixed(2)}
+    - Transportation: $${(budget * BUDGET_ALLOCATIONS.TRANSPORTATION).toFixed(2)}
+    - Activities: $${(budget * BUDGET_ALLOCATIONS.ACTIVITIES).toFixed(2)}
 
     Requirements:
     - Provide exactly ${duration} days of activities
@@ -161,7 +172,7 @@ export async function POST(req: NextRequest) {
     - For hotel recommendations, provide 3 options at different price points
     - For attractions, list 5-7 must-see places
 
-    Format the response as a valid JSON object with the following structure:
+    Format the response as a valid JSON object with the following EXACT structure:
     {
       "dailyItinerary": [
         {
@@ -192,24 +203,52 @@ export async function POST(req: NextRequest) {
           "description": "A must-visit historical site"
         }
       ]
-    }`
+    }
+
+    IMPORTANT: Respond with ONLY the JSON object, no markdown, no code blocks, no explanations.`
 
     console.log("Making request to Groq API");
-    const chatCompletion = await groq.chat.completions.create({
-      messages: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-      model: "llama3-8b-8192",
-      temperature: 0.7,
-      max_tokens: 2048,
-    })
+    let chatCompletion;
+    try {
+      chatCompletion = await groq.chat.completions.create({
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+        model: "qwen/qwen3-32b",
+        temperature: 0.6,
+        max_tokens: 4096,
+      })
+    } catch (modelError) {
+      console.warn("Primary model failed, trying fallback model:", modelError)
+      try {
+        chatCompletion = await groq.chat.completions.create({
+          messages: [
+            {
+              role: "user",
+              content: prompt,
+            },
+          ],
+          model: "llama3-70b-8192",
+          temperature: 0.6,
+          max_tokens: 4096,
+        })
+      } catch (fallbackError) {
+        console.error("Both models failed:", fallbackError)
+        throw new Error("AI model unavailable")
+      }
+    }
     console.log("Received response from Groq API");
 
     const rawOutput = chatCompletion.choices[0]?.message?.content || ""
     console.log("Raw AI Output:", rawOutput) // Debug log
+
+    if (!rawOutput.trim()) {
+      console.error("Empty response from AI")
+      throw new Error("Empty response from AI model")
+    }
 
     // Clean the JSON output
     const cleanedJSON = cleanJSON(rawOutput)
@@ -218,12 +257,22 @@ export async function POST(req: NextRequest) {
     let parsed
     try {
       parsed = JSON.parse(cleanedJSON)
+      console.log("Successfully parsed JSON response")
     } catch (parseError: unknown) {
       console.error("JSON Parse Error:", parseError)
+      console.error("Cleaned JSON that failed:", cleanedJSON)
       if (parseError instanceof Error) {
-        return NextResponse.json({ error: "Failed to parse AI response", details: parseError.message }, { status: 500 })
+        return NextResponse.json({
+          error: "Failed to parse AI response",
+          details: parseError.message,
+          rawResponse: rawOutput.substring(0, 500) // Include part of raw response for debugging
+        }, { status: 500 })
       } else {
-        return NextResponse.json({ error: "Failed to parse AI response", details: "Unknown error" }, { status: 500 })
+        return NextResponse.json({
+          error: "Failed to parse AI response",
+          details: "Unknown error",
+          rawResponse: rawOutput.substring(0, 500)
+        }, { status: 500 })
       }
     }
 
